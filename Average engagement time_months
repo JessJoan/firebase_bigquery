@@ -1,0 +1,10 @@
+SELECT month_start
+    ,AVG(average_engagement_time) AS average_engagement_time
+FROM (SELECT DATE(CAST(SUBSTR(event_date,0, 4) AS INT64),CAST(SUBSTR(event_date,5, 2)AS INT64), 01) AS month_start
+       ,user_pseudo_id
+       ,SUM(ep.value.int_value)/60000 AS average_engagement_time 
+    FROM `africapenews.analytics_223296047.events_*` , UNNEST(event_params) as ep
+    WHERE event_name = 'user_engagement' AND ep.key ='engagement_time_msec' 
+    GROUP BY month_start, user_pseudo_id) a
+GROUP BY month_start
+ORDER BY month_start DESC
